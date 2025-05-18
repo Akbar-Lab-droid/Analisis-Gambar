@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis Gambar Hacker Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto Mono', monospace; background: #121212; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow-x: hidden; background-image: linear-gradient(rgba(0, 255, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 0, 0.1) 1px, transparent 1px); background-size: 20px 20px; color: #00ff00; }
+        .container { background: rgba(18, 18, 18, 0.9); padding: 30px; border: 2px solid #00b7eb; border-radius: 10px; width: 100%; max-width: 600px; text-align: center; box-shadow: 0 0 20px rgba(0, 255, 0, 0.3); animation: glitch 3s infinite linear; }
+        @keyframes glitch { 0%, 100% { transform: translate(0); } 10% { transform: translate(-2px, 2px); } 20% { transform: translate(2px, -2px); } 30% { transform: translate(-2px, 2px); } 40%, 100% { transform: translate(0); } }
+        h1 { color: #00ff00; font-size: 28px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px #00ff00, 0 0 20px #00b7eb; animation: typing 2s steps(20) infinite, glow 1.5s infinite ease-in-out; }
+        @keyframes typing { from { width: 0; } to { width: 100%; } }
+        @keyframes glow { 0%, 100% { text-shadow: 0 0 10px #00ff00, 0 0 20px #00b7eb; } 50% { text-shadow: 0 0 20px #00ff00, 0 0 30px #00b7eb; } }
+        .file-upload, .url-input { position: relative; margin: 20px 0; padding: 15px; background: rgba(0, 183, 235, 0.1); border: 1px dashed #00ff00; border-radius: 8px; transition: all 0.3s ease; animation: fadeIn 0.8s ease; }
+        .file-upload:hover, .url-input:hover { background: rgba(0, 183, 235, 0.2); border-color: #00b7eb; box-shadow: 0 0 15px rgba(0, 183, 235, 0.5); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        input[type="file"] { width: 100%; opacity: 0; position: absolute; top: 0; left: 0; height: 100%; cursor: pointer; }
+        input[type="text"] { width: 100%; padding: 10px; background: transparent; border: 1px solid #00ff00; color: #00ff00; font-family: 'Roboto Mono', monospace; font-size: 14px; border-radius: 5px; outline: none; }
+        input[type="text"]::placeholder { color: #00b7eb; }
+        .file-upload label, .url-input label { color: #00ff00; font-size: 16px; font-weight: 600; display: block; cursor: pointer; text-shadow: 0 0 5px #00ff00; }
+        #file-name, #status, #url-status { color: #00b7eb; font-size: 14px; margin-top: 10px; word-break: break-all; animation: fadeIn 0.5s ease; }
+        button { padding: 15px 35px; background: rgba(0, 255, 0, 0.2); color: #00ff00; border: 1px solid #00ff00; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); transition: all 0.3s ease; position: relative; overflow: hidden; margin: 10px; animation: popIn 1s ease; }
+        button:hover { background: rgba(0, 183, 235, 0.3); color: #00b7eb; box-shadow: 0 0 20px rgba(0, 183, 235, 0.5); border-color: #00b7eb; }
+        @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        button .ripple { position: absolute; background: rgba(0, 183, 235, 0.5); border-radius: 50%; transform: scale(0); animation: ripple 0.6s linear; pointer-events: none; }
+        @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+        .loading { display: none; margin: 20px auto; width: 40px; height: 40px; border: 4px solid #00ff00; border-top: 4px solid #00b7eb; border-radius: 50%; animation: spin 1s linear infinite, popIn 0.5s ease; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #result, #error { margin-top: 20px; padding: 15px; background: rgba(0, 255, 0, 0.1); border: 1px solid #00ff00; border-radius: 8px; font-size: 14px; color: #00ff00; max-height: 250px; overflow-y: auto; box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); animation: fadeIn 0.5s ease, glitch 3s infinite linear; white-space: pre-wrap; }
+        #error { color: #00b7eb; background: rgba(0, 183, 235, 0.1); border-color: #00b7eb; box-shadow: 0 0 10px rgba(0, 183, 235, 0.3); }
+        .typing-animation { overflow: hidden; white-space: pre-wrap; animation: type 2s steps(40, end), blink 0.5s step-end infinite; }
+        @keyframes type { from { width: 0; } to { width: 100%; } }
+        @keyframes blink { 50% { border-right: 2px solid transparent; } 51% { border-right: 2px solid #00ff00; } 100% { border-right: 2px solid #00ff00; } }
+        @media (max-width: 600px) { .container { padding: 20px; max-width: 90%; } h1 { font-size: 22px; } button { padding: 12px 25px; font-size: 14px; } }
+        #matrix-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: black;
+}
+
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="container">
+        <h1>Analisis Gambar</h1>
+        <div class="file-upload">
+            <label for="imageInput">Pilih Gambar</label>
+            <input type="file" id="imageInput" accept="image/*" onchange="displayFileName()">
+        </div>
+        <div id="file-name"></div>
+        <div class="url-input">
+            <label for="imageUrl">Masukkan URL Gambar</label>
+            <input type="text" id="imageUrl" placeholder="https://via.placeholder.com/150" oninput="validateUrl()">
+        </div>
+        <div id="url-status"></div>
+        <div id="status"></div>
+        <button onclick="analyzeImage()">Analisis Sekarang</button>
+        <button onclick="retryAnalysis()" id="retry-button" style="display: none;">Coba Lagi</button>
+        <div class="loading" id="loading"></div>
+        <div id="result" class="typing-animation"></div>
+        <div id="error" class="typing-animation"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const binary = "0101010101010101";
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+
+    const drops = [];
+    for (let i = 0; i < columns; i++) {
+        drops[i] = Math.random() * -20;
+    }
+
+    function drawMatrix() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#00FF00";
+        ctx.font = fontSize + "px 'Roboto Mono', monospace";
+
+        for (let i = 0; i < drops.length; i++) {
+            const text = binary[Math.floor(Math.random() * binary.length)];
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+            if (drops[i] * fontSize > canvas.height || Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+
+            drops[i]++;
+        }
+    }
+
+    setInterval(drawMatrix, 33);
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+        let selectedFile = null;
+        let imageUrl = null;
+
+        function displayFileName() {
+            const imageInput = document.getElementById('imageInput');
+            const fileNameDiv = document.getElementById('file-name');
+            const statusDiv = document.getElementById('status');
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            const retryButton = document.getElementById('retry-button');
+
+            resultDiv.innerText = '';
+            errorDiv.innerText = '';
+            retryButton.style.display = 'none';
+            statusDiv.innerText = '';
+
+            if (imageInput.files && imageInput.files.length > 0) {
+                selectedFile = imageInput.files[0];
+                imageUrl = null;
+                fileNameDiv.innerText = `File: ${selectedFile.name}`;
+                statusDiv.innerText = 'File terdeteksi, silakan klik "Analisis Sekarang".';
+                document.getElementById('imageUrl').value = '';
+                document.getElementById('url-status').innerText = '';
+            } else {
+                selectedFile = null;
+                fileNameDiv.innerText = '';
+                if (!imageUrl) {
+                    statusDiv.innerText = 'File atau URL tidak terdeteksi, silakan pilih gambar atau masukkan URL.';
+                }
+            }
+        }
+
+        function validateUrl() {
+            const urlInput = document.getElementById('imageUrl');
+            const urlStatusDiv = document.getElementById('url-status');
+            const statusDiv = document.getElementById('status');
+            const fileNameDiv = document.getElementById('file-name');
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            const retryButton = document.getElementById('retry-button');
+
+            resultDiv.innerText = '';
+            errorDiv.innerText = '';
+            retryButton.style.display = 'none';
+
+            imageUrl = urlInput.value.trim();
+            selectedFile = null;
+            fileNameDiv.innerText = '';
+            document.getElementById('imageInput').value = '';
+
+            if (imageUrl) {
+                const urlPattern = /\.(jpeg|jpg|png|gif|bmp|webp)$/i;
+                if (urlPattern.test(imageUrl)) {
+                    urlStatusDiv.innerText = 'URL gambar valid, silakan klik "Analisis Sekarang".';
+                    statusDiv.innerText = '';
+                } else {
+                    urlStatusDiv.innerText = 'URL tidak valid atau bukan gambar. Harap masukkan URL gambar (jpg, png, dll).';
+                    imageUrl = null;
+                }
+            } else {
+                urlStatusDiv.innerText = '';
+                if (!selectedFile) {
+                    statusDiv.innerText = 'File atau URL tidak terdeteksi, silakan pilih gambar atau masukkan URL.';
+                }
+            }
+        }
+
+        function getImageDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = (error) => reject(error);
+            });
+        }
+
+        function addRippleEffect(e, button) {
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+            ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+            button.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        }
+
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                addRippleEffect(e, this);
+            });
+        });
+
+        async function analyzeImage() {
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            const fileNameDiv = document.getElementById('file-name');
+            const urlStatusDiv = document.getElementById('url-status');
+            const statusDiv = document.getElementById('status');
+            const loadingDiv = document.getElementById('loading');
+            const retryButton = document.getElementById('retry-button');
+
+            if (!selectedFile && !imageUrl) {
+                errorDiv.innerText = 'File atau URL tidak terdeteksi, silakan pilih gambar atau masukkan URL.';
+                typeWriter(errorDiv, errorDiv.innerText);
+                statusDiv.innerText = '';
+                return;
+            }
+
+            if (selectedFile) {
+                if (!selectedFile.type.startsWith('image/')) {
+                    errorDiv.innerText = 'File yang dipilih bukan gambar. Harap pilih file dengan format JPEG, PNG, atau sejenisnya.';
+                    typeWriter(errorDiv, errorDiv.innerText);
+                    statusDiv.innerText = '';
+                    return;
+                }
+
+                const maxSize = 5 * 1024 * 1024;
+                if (selectedFile.size > maxSize) {
+                    errorDiv.innerText = 'Ukuran gambar terlalu besar (maks 5MB).';
+                    typeWriter(errorDiv, errorDiv.innerText);
+                    statusDiv.innerText = '';
+                    return;
+                }
+            }
+
+            resultDiv.innerText = '';
+            errorDiv.innerText = '';
+            fileNameDiv.innerText = '';
+            urlStatusDiv.innerText = '';
+            retryButton.style.display = 'none';
+            statusDiv.innerText = 'Sedang memproses...';
+            loadingDiv.style.display = 'block';
+
+            try {
+                let imageData = null;
+                if (selectedFile) {
+                    imageData = await getImageDataURL(selectedFile);
+                } else if (imageUrl) {
+                    imageData = imageUrl; // Kirim URL langsung ke API
+                }
+
+                const response = await fetch("https://h56-image-scanner-api.netlify.app/api/img-scanner", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        base64Image: selectedFile ? imageData : null,
+                        imageUrl: imageUrl || null
+                    })
+                });
+
+                loadingDiv.style.display = 'none';
+                statusDiv.innerText = 'Permintaan selesai.';
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                // Tampilkan hanya bagian result dan filter \n
+                const resultText = data.result ? JSON.stringify(data.result, null, 2).replace(/\n/g, ' ') : 'Tidak ada hasil tersedia.';
+                typeWriter(resultDiv, resultText);
+                errorDiv.innerText = '';
+            } catch (error) {
+                console.error('Error:', error);
+                loadingDiv.style.display = 'none';
+                statusDiv.innerText = 'Gagal memproses permintaan.';
+                // Simulasi dengan hanya result dan filter \n
+                const simulatedResponse = {
+                    result: {
+                        description: selectedFile
+                            ? `Gambar ini adalah file ${selectedFile.type.split('/')[1].toUpperCase()} dengan nama ${selectedFile.name}. Analisis visual tidak tersedia, tetapi file telah diproses.`
+                            : `Gambar dari URL ${imageUrl}. Analisis visual tidak tersedia, tetapi URL telah diproses.`
+                    }
+                };
+                const resultText = JSON.stringify(simulatedResponse.result, null, 2).replace(/\n/g, ' ');
+                typeWriter(resultDiv, resultText);
+                errorDiv.innerText = `Gagal menganalisis gambar: ${error.message}. Menampilkan hasil simulasi.`;
+                typeWriter(errorDiv, errorDiv.innerText);
+                retryButton.style.display = 'inline-block';
+            }
+        }
+
+        function retryAnalysis() {
+            analyzeImage();
+        }
+
+        function typeWriter(element, text) {
+            let index = 0;
+            element.innerHTML = '';
+            const interval = setInterval(() => {
+                if (index < text.length) {
+                    element.innerHTML += text.charAt(index);
+                    index++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 5);
+        }
+    </script>
+</body>
+</html>
